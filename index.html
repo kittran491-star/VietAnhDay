@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Viet Anh's Day ✦</title>
+<style>
+:root{--pink:#f77d9b;--cream:#ffe0c7;--ink:#17131a;--green:#31e783}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#17131a;color:#fff;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-weight:700} body,button,input{font-family:inherit} button{font-family:inherit}
+button{font:inherit;cursor:pointer}
+.page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:10px}
+.game-shell{position:relative;width:min(100%,620px);aspect-ratio:1024/1536;overflow:hidden}
+.game-bg{display:block;width:100%;height:100%;object-fit:contain;user-select:none}
+.task{position:absolute;left:20.3%;width:56%;height:5.3%;border:0;background:transparent;display:flex;align-items:center;gap:clamp(8px,2vw,18px);padding:0;text-align:left}
+.task:nth-of-type(2){top:18.4%}.task:nth-of-type(3){top:25.2%}.task:nth-of-type(4){top:32%}
+.heart{width:clamp(28px,7vw,54px);height:auto;image-rendering:pixelated;flex:none;transition:transform .15s}
+.task:active .heart{transform:scale(.86)}
+.task.done .heart{opacity:.45}
+.task .tick{position:absolute;width:clamp(28px,6vw,47px);height:auto;left:0;top:50%;transform:translate(-5%,-50%) scale(.25) rotate(-20deg);opacity:0;transition:all .22s;image-rendering:pixelated}
+.task.done .tick{opacity:1;transform:translate(-5%,-50%) scale(1) rotate(-7deg)}
+.task-label{font-family:inherit;font-size:clamp(11px,2.5vw,19px);font-weight:1000;color:#fff;text-shadow:2px 2px #17131a,-1px -1px #17131a;white-space:nowrap}
+.start{position:absolute;left:29%;top:39.0%;width:47%;height:6.1%;border:0;background:transparent;color:white;font-size:clamp(13px,2.8vw,21px);font-weight:1000;text-shadow:2px 2px #17131a,-1px -1px #17131a;display:flex;align-items:center;justify-content:center;padding:0;isolation:isolate}.start-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;z-index:-1;image-rendering:pixelated}.start span{position:relative;z-index:1;max-width:88%;line-height:1.05;text-align:center}
+.toast{position:fixed;z-index:20;top:15px;left:50%;transform:translate(-50%,-15px);opacity:0;pointer-events:none;width:max-content;max-width:90vw;padding:10px 18px;background:#ffe0c7;color:#241a27;border:3px solid #17131a;border-radius:12px;box-shadow:4px 4px #f77d9b;font-weight:1000;text-align:center;transition:.2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.modal{display:none;position:fixed;z-index:30;inset:0;background:#130e19d9;align-items:center;justify-content:center;padding:18px}
+.modal.show{display:flex}
+.award-wrap{width:min(92vw,580px);display:flex;flex-direction:column;align-items:center;gap:0}.award-ok{margin-top:-2px;min-width:112px;box-shadow:3px 5px #080510;border:3px solid #17131a;border-radius:999px;background:var(--pink);color:white;font-weight:1000;padding:7px 24px;flex:none;position:relative;z-index:2}.modal-box{width:min(88vw,560px);aspect-ratio:1.5;background:url("assets/notification-box.png") center/100% 100% no-repeat;display:flex;align-items:center;justify-content:center;text-align:center;color:#30254b;padding:0;position:relative;filter:drop-shadow(0 8px 10px #080510a8);overflow:hidden}
+.modal-copy{font-family:inherit;font-weight:900;font-size:clamp(12px,2.05vw,19px);line-height:1.15;width:62%;height:53%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(3px,.8vw,8px);text-align:center;overflow:hidden;overflow-wrap:anywhere;position:relative;top:-1%}
+.award-subtitle{font-size:clamp(12px,2.1vw,19px);font-weight:1000;line-height:1.12;max-width:100%}.modal-star{width:clamp(30px,5.4vw,52px);height:auto;image-rendering:pixelated;filter:drop-shadow(2px 3px #a35e30);flex:none}
+.pixel-btn{font-family:inherit;border:3px solid #17131a;border-radius:999px;background:var(--pink);color:#fff;font-weight:1000;padding:7px 24px;box-shadow:3px 4px #17131a;margin-top:0;flex:none}
+.hall-page{display:none;width:min(100%,720px);margin:auto;padding:12px 8px 32px}
+.hall-page.show{display:block}
+.game-page.hide{display:none}
+.hall-title{font-family:inherit;text-align:center;font-size:clamp(24px,5vw,40px);font-weight:1000;color:#ffe0c7;text-shadow:3px 3px #e76e8b;margin:10px 0 3px}
+.hall-instructions{font-family:inherit;text-align:center;color:#ffe0c7;font-weight:750;margin:0 auto 10px;max-width:460px}
+.wall-scene{position:relative;width:min(100%,480px);margin:0 auto;aspect-ratio:2/3;cursor:pointer;overflow:hidden;isolation:isolate}
+.wall-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;z-index:-1}
+.wall-hit{position:absolute;left:18%;top:17%;width:64%;height:53%;border:0;background:transparent;cursor:pointer;border-radius:12px}
+.wall-hit:focus-visible{outline:3px dashed #ffe0c7}
+.wall-hint{position:absolute;left:23%;top:39%;width:54%;padding:10px 8px;border:2px dashed #fff0d6;border-radius:12px;background:#38294a9c;text-align:center;color:#fff0d6;font-size:clamp(12px,2.8vw,17px);font-weight:900;animation:hintPulse 1.7s ease-in-out infinite;pointer-events:none}
+@keyframes hintPulse{50%{transform:scale(1.035);opacity:.72}}
+.memory-frame{position:absolute;left:22%;top:20%;width:56%;height:auto;opacity:0;transform:scale(.72) translateY(14px);transform-origin:center center;pointer-events:none;filter:drop-shadow(0 4px 4px #1b102c80)}
+.memory-frame.reveal{animation:revealFrame 2.6s cubic-bezier(.2,.7,.15,1) forwards}
+@keyframes revealFrame{0%{opacity:0;transform:scale(.72) translateY(14px);filter:blur(5px) drop-shadow(0 4px 4px #1b102c80)}70%{opacity:1;filter:blur(0) drop-shadow(0 4px 4px #1b102c80)}100%{opacity:1;transform:scale(1) translateY(0);filter:drop-shadow(0 4px 4px #1b102c80)}}
+.good-stamp{position:absolute;width:46%;left:18%;top:20%;opacity:0;transform:scale(.4) rotate(-12deg);transform-origin:top left;pointer-events:none;filter:drop-shadow(3px 5px 4px #231b2b99);z-index:5}
+.good-stamp.stamped{animation:stampIn .55s cubic-bezier(.2,1.5,.5,1) forwards}
+@keyframes stampIn{to{opacity:1;transform:scale(1) rotate(-8deg)}}
+.hall-note{text-align:center;color:#ffe0c7;font-size:13px;margin:8px auto 0;max-width:460px}
+@media(min-width:650px){.game-shell{width:min(100%,540px)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}}
+
+
+#awardModal .award-wrap {
+  width: min(92vw, 580px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+#awardModal .modal-box {
+  width: min(88vw, 560px) !important;
+  aspect-ratio: 1.5 !important;
+  height: auto !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+  display: block !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+#awardModal .modal-copy {
+  position: absolute !important;
+  left: 14% !important;
+  right: 14% !important;
+  top: 23% !important;
+  bottom: 22% !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: minmax(0, 1fr) auto minmax(0, 1fr) !important;
+  align-items: center !important;
+  justify-items: center !important;
+  gap: 2px !important;
+  text-align: center !important;
+  font-family: inherit !important;
+  font-size: clamp(10px, 1.65vw, 16px) !important;
+  font-weight: 900 !important;
+  line-height: 1.1 !important;
+  overflow: hidden !important;
+  overflow-wrap: anywhere !important;
+}
+#awardModal .award-heading {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  font-size: inherit !important;
+  line-height: 1.1 !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  overflow: hidden !important;
+}
+#awardModal .modal-star {
+  display: block !important;
+  width: clamp(28px, 4.2vw, 44px) !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  height: auto !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+}
+#awardModal .award-subtitle {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  max-height: 100% !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  font-size: clamp(10px, 1.65vw, 16px) !important;
+  line-height: 1.1 !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  overflow: hidden !important;
+}
+#awardModal .award-ok {
+  margin: -1px 0 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+@media (max-width: 520px) {
+  #awardModal .modal-copy { left: 15% !important; right: 15% !important; top: 24% !important; bottom: 23% !important; font-size: clamp(9px, 2.5vw, 13px) !important; }
+  #awardModal .award-subtitle { font-size: clamp(9px, 2.4vw, 13px) !important; }
+  #awardModal .modal-star { width: clamp(24px, 6vw, 34px) !important; }
+}
+
+
+
+
+
+
+
+
+/* v2.9 — hard-center the entire notification content group */
+#awardModal .modal-box {
+  position: relative !important;
+  display: block !important;
+  width: min(88vw, 560px) !important;
+  aspect-ratio: 1.5 !important;
+  height: auto !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+#awardModal .modal-copy {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  right: auto !important;
+  bottom: auto !important;
+  transform: translate(-50%, -50%) !important;
+  width: 66% !important;
+  height: auto !important;
+  max-height: 72% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: clamp(5px, 1vw, 10px) !important;
+  text-align: center !important;
+  font-family: inherit !important;
+  font-size: clamp(12px, 1.7vw, 18px) !important;
+  font-weight: 900 !important;
+  line-height: 1.12 !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+}
+#awardModal .award-heading,
+#awardModal .award-subtitle {
+  position: static !important;
+  display: block !important;
+  flex: 0 1 auto !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 2px !important;
+  box-sizing: border-box !important;
+  text-align: center !important;
+  font-size: inherit !important;
+  font-weight: 900 !important;
+  line-height: 1.12 !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+}
+#awardModal .modal-star {
+  position: static !important;
+  display: block !important;
+  flex: 0 0 auto !important;
+  width: clamp(32px, 4.2vw, 46px) !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  margin: 0 !important;
+}
+#awardModal .award-ok {
+  display: block !important;
+  margin: 0 auto !important;
+}
+@media (max-width: 520px) {
+  #awardModal .modal-copy {
+    width: 68% !important;
+    font-size: clamp(10px, 2.5vw, 14px) !important;
+    gap: 4px !important;
+  }
+  #awardModal .modal-star { width: clamp(25px, 5vw, 32px) !important; }
+}
+
+
+/* v3.0: keep v2.9 font size and centering; split completion phrase into two lines */
+#awardModal .award-heading {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+#awardModal .award-heading span {
+  display: block !important;
+  width: 100% !important;
+  line-height: inherit !important;
+}
+
+</style>
+</head>
+<body>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<audio id="tickSound" src="assets/tick-sound.mp3" preload="auto"></audio>
+<audio id="goodSound" src="assets/good-job-sound.mp3" preload="auto"></audio>
+<audio id="notificationSound" src="assets/notification-sound.mp3" preload="auto"></audio>
+<audio id="bgMusic" src="assets/background-music.mp3" preload="auto" loop></audio>
+
+<main class="page game-page" id="gamePage">
+ <div class="game-shell">
+  <img class="game-bg" src="assets/background.png" alt="Màn hình game Viet Anh's Day">
+  <button class="task" style="top:18.4%" data-task="0" aria-label="Hoàn thành uống hết một bình nước">
+   <img class="heart" src="assets/heart.png" alt=""><img class="tick" src="assets/tick.png" alt=""><span class="task-label">UỐNG HẾT 1 BÌNH NƯỚC</span>
+  </button>
+  <button class="task" style="top:25.2%" data-task="1" aria-label="Hoàn thành ăn thử một món mới">
+   <img class="heart" src="assets/heart.png" alt=""><img class="tick" src="assets/tick.png" alt=""><span class="task-label">ĂN THỬ MỘT MÓN MỚI</span>
+  </button>
+  <button class="task" style="top:32%" data-task="2" aria-label="Hoàn thành chụp một tấm hình">
+   <img class="heart" src="assets/heart.png" alt=""><img class="tick" src="assets/tick.png" alt=""><span class="task-label">CHỤP MỘT TẤM HÌNH</span>
+  </button>
+  <button class="start" id="startButton"><img class="start-bg" src="assets/pink-box.png" alt=""><span id="startLabel">START</span></button>
+ </div>
+</main>
+
+<section class="hall-page" id="hallPage">
+ <h1 class="hall-title">HALL OF FRAME ✦</h1>
+ <p class="hall-instructions" id="hallInstructions">Chạm vào bức tường để mở khung kỷ niệm đầu tiên nhé!</p>
+ <div class="wall-scene" id="wallScene" role="group" aria-label="Bức tường kỷ niệm">
+  <img class="wall-bg" src="assets/hall-wall.png" alt="Bức tường kỷ niệm pixel art">
+  <button class="wall-hit" id="wallHit" aria-label="Chạm để hiện khung kỷ niệm"></button>
+  <div class="wall-hint" id="wallHint">✦ CHẠM VÀO TƯỜNG ✦<br>để mở kỷ niệm đầu tiên</div>
+  <img class="memory-frame" id="memoryFrame" src="assets/memory-frame.png" alt="Khung ảnh kỷ niệm đầu tiên">
+  <img class="good-stamp" id="goodStamp" src="assets/good-job.png" alt="Dấu mộc giỏi lắm nha">
+ </div>
+ <p class="hall-note" id="hallNote">Mỗi khung hình sẽ lưu lại một điều đáng tự hào.</p>
+ <div style="text-align:center;margin-top:12px"><button class="pixel-btn" id="replayButton">QUAY LẠI GAME</button></div>
+</section>
+
+<div class="modal" id="awardModal" role="dialog" aria-modal="true" aria-labelledby="awardText">
+ <div class="award-wrap">
+  <div class="modal-box">
+   <div class="modal-copy">
+    <div id="awardText" class="award-heading"><span>BẠN ĐÃ HOÀN THÀNH</span><span>NHIỆM VỤ!</span></div>
+    <img class="modal-star" src="assets/star.png" alt="Ngôi sao thành tựu">
+    <div class="award-subtitle">+1 NGÔI SAO THÀNH TỰU</div>
+   </div>
+  </div>
+  <button class="pixel-btn award-ok" id="okButton">OK!</button>
+ </div>
+</div>
+
+<script>
+(() => {
+ const done=[false,false,false];
+ const toast=document.getElementById('toast');
+ const bgMusic=document.getElementById('bgMusic');
+ const tickSound=document.getElementById('tickSound');
+ const goodSound=document.getElementById('goodSound');
+ const notificationSound=document.getElementById('notificationSound');
+ const awardModal=document.getElementById('awardModal');
+ let toastTimer, awardShown=false, musicStarted=false, frameRevealed=false;
+
+ function play(audio, restart=true, volume=1){
+  try{audio.volume=volume;if(restart)audio.currentTime=0;const p=audio.play();if(p&&p.catch)p.catch(()=>{});}catch(e){}
+ }
+ function startMusic(){
+  if(musicStarted)return;musicStarted=true;play(bgMusic,false,.24);
+ }
+ function showToast(text){
+  toast.textContent=text;toast.classList.add('show');clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>toast.classList.remove('show'),1700);
+ }
+ function count(){return done.filter(Boolean).length}
+ function showAward(){
+  if(awardShown)return;awardShown=true;play(notificationSound);awardModal.classList.add('show');
+ }
+ document.querySelectorAll('.task').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+   startMusic();const i=Number(btn.dataset.task);
+   if(done[i]){showToast('Mục này hoàn thành rồi nè 💚');return}
+   done[i]=true;btn.classList.add('done');play(tickSound);
+   const n=count();
+   const phrases=['Tốt lắm, mình bắt đầu nha!','Một nhiệm vụ xong rồi, giỏi lắm!','Sao mà giỏi thế! ✨','HOÀN THÀNH CẢ 3!'];
+   document.getElementById('startLabel').textContent=phrases[n];
+   showToast(n===2?'Sao mà giỏi thế! ✨':n===3?'Bạn nhận được 1 ngôi sao ⭐':'Ting! Thêm một nhiệm vụ hoàn thành 💗');
+   if(n===2){play(goodSound)}
+   if(n===3)setTimeout(showAward,550);
+  });
+ });
+ document.getElementById('startButton').addEventListener('click',()=>{
+  startMusic();if(count()===3)showAward();else showToast(count()===0?'Chọn một trái tim để bắt đầu nhé! 💗':count()===1?'Khởi đầu tốt lắm! Làm tiếp một mục nữa nha!':'Sắp xong rồi, cố lên nào! ✨');
+ });
+ document.getElementById('okButton').addEventListener('click',()=>{
+  awardModal.classList.remove('show');
+  document.getElementById('gamePage').classList.add('hide');
+  document.getElementById('hallPage').classList.add('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+ });
+ document.getElementById('wallHit').addEventListener('click',()=>{
+  startMusic();
+  if(frameRevealed){showToast('Kỷ niệm đầu tiên đã được mở khóa ✨');return}
+  frameRevealed=true;
+  document.getElementById('wallHint').style.display='none';
+  document.getElementById('hallInstructions').textContent='Khung kỷ niệm đang dần hiện ra...';
+  document.getElementById('memoryFrame').classList.add('reveal');
+  play(notificationSound);
+  setTimeout(()=>{
+   document.getElementById('goodStamp').classList.add('stamped');
+   play(tickSound);
+   document.getElementById('hallInstructions').textContent='Kỷ niệm đầu tiên đã được lưu vào Hall of Frame!';
+   document.getElementById('hallNote').textContent='✦ GIỎI LẮM NHA! ✦ Một ngôi sao, một kỷ niệm đáng giữ lại.';
+  },2650);
+ });
+ document.getElementById('replayButton').addEventListener('click',()=>{
+  done.fill(false);awardShown=false;frameRevealed=false;
+  document.querySelectorAll('.task').forEach(b=>b.classList.remove('done'));
+  document.getElementById('startLabel').textContent='START';
+  document.getElementById('memoryFrame').classList.remove('reveal');
+  document.getElementById('goodStamp').classList.remove('stamped');
+  document.getElementById('wallHint').style.display='';
+  document.getElementById('hallInstructions').textContent='Chạm vào bức tường để mở khung kỷ niệm đầu tiên nhé!';
+  document.getElementById('hallNote').textContent='Mỗi khung hình sẽ lưu lại một điều đáng tự hào.';
+  document.getElementById('hallPage').classList.remove('show');
+  document.getElementById('gamePage').classList.remove('hide');
+  window.scrollTo({top:0,behavior:'smooth'});
+ });
+ // Most browsers require a gesture before playing background music; it begins on the first game/wall interaction.
+})();
+</script>
+</body>
+</html>
