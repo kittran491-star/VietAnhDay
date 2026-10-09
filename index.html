@@ -334,7 +334,7 @@ button{font:inherit;cursor:pointer}
    if(done[i]){showToast('Mục này hoàn thành rồi nè 💚');return}
    done[i]=true;btn.classList.add('done');play(tickSound);
    const n=count();
-   const phrases=['Tốt lắm, mình bắt đầu nha!','Một nhiệm vụ xong rồi, giỏi lắm!','Sao mà giỏi thế! ✨','HOÀN THÀNH CẢ 3!'];
+   const phrases=['Tốt lắm, mình bắt đầu nha!','Giỏi quá ạ!','Sao mà giỏi thế! ','HOÀN THÀNH CẢ 3!'];
    document.getElementById('startLabel').textContent=phrases[n];
    showToast(n===2?'Sao mà giỏi thế! ✨':n===3?'Bạn nhận được 1 ngôi sao ⭐':'Ting! Thêm một nhiệm vụ hoàn thành 💗');
    if(n===2){play(goodSound)}
